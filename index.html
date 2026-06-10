@@ -1126,7 +1126,7 @@
         let w = 0, h = 0, dpr = 1, raf = null, t = 0;
         const isMobile = window.matchMedia('(max-width:640px)').matches;
         const EMBERS = isMobile ? 9 : 16;   // rising warm sparks
-        const MOTES  = isMobile ? 9 : 12;   // gentle falling light
+        const MOTES  = isMobile ? 15 : 20;   // gentle falling light
         const rand = (a, b) => a + Math.random() * (b - a);
         let parts = [];
 
@@ -1146,8 +1146,8 @@
         }
         function mote(){
             return { type:'m', x:rand(0,w), y:rand(-20, h*0.5),
-                r:rand(0.5,1.5), vx:rand(-0.08,0.08), vy:rand(0.10,0.26),
-                a:0, aMax:rand(0.08,0.26), d:rand(0,6.28), c:'237,234,228' };
+                r:rand(0.5,1.5), vx:rand(-0.08,0.08), vy:rand(0.15,0.35),
+                a:0, aMax:rand(0.15,0.45), d:rand(0,6.28), c:'237,234,228' };
         }
         function seed(){
             parts = [];
