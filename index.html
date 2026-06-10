@@ -189,9 +189,6 @@
             display: flex; align-items: flex-end;
             background: url('https://cdna.artstation.com/p/assets/images/images/095/886/172/large/art3xile-last-prj0-6.jpg') center top / cover no-repeat;
         }
-        /* Gradient weighted to the bottom-left (the dark archway), so the figure + candle stay visible */
-        /* Strong gradient at the bottom-left (where the text sits) keeps copy readable;
-           the figure, candle and upper-right stay bright so the art still reads. */
         .hero::before {
             content:''; position: absolute; inset: 0;
             background:
@@ -269,6 +266,17 @@
         .card .meta .view { margin-top: 14px; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--exilio); display: inline-flex; align-items: center; gap: 8px; transition: gap .25s; }
         .card:hover .meta .view { gap: 14px; }
 
+        /* ============ GALLERY FILTERS ============ */
+        .filters { display: flex; flex-wrap: wrap; gap: 10px; margin: -10px 0 36px; }
+        .filter-btn {
+            font-family:'Inter',sans-serif; font-size: 12.5px; font-weight: 600; letter-spacing: 1px;
+            text-transform: uppercase; color: var(--muted); background: transparent;
+            border: 1px solid var(--line); border-radius: 999px; padding: 9px 18px; cursor: pointer;
+            transition: color .25s, background .25s, border-color .25s;
+        }
+        .filter-btn:hover { color: var(--paper); border-color: var(--exilio); }
+        .filter-btn.active { color: #fff; background: var(--exilio); border-color: var(--exilio); }
+
         /* ============ ILLUSTRATION MASONRY ============ */
         .masonry { column-count: 1; column-gap: 16px; }
         .ill {
@@ -276,6 +284,7 @@
             border-radius: 10px; overflow: hidden; cursor: pointer; display: block;
             border: 1px solid var(--line); transition: border-color .3s;
         }
+        .ill.hide, .card.hide { display: none; }
         .ill img { width: 100%; height: auto; transition: transform .5s var(--ease); }
         .ill:hover { border-color: var(--exilio); }
         .ill:hover img { transform: scale(1.04); }
@@ -582,6 +591,7 @@
                 <h2>Character design, shown as process</h2>
                 <p>Not just finished pictures — the thinking behind them. Click any character to walk through its design sheets: structure, turnaround, expressions, and final.</p>
             </div>
+            <div class="filters reveal" id="concept-filters" role="tablist" aria-label="Filter concept art"></div>
             <div class="grid grid-3" id="concept-grid"></div>
         </div>
     </section>
@@ -594,6 +604,7 @@
                 <h2>Finished pieces &amp; key art</h2>
                 <p>Personal and commissioned illustrations — character moments, story scenes, and mood, built with color, light, and feeling.</p>
             </div>
+            <div class="filters reveal" id="ill-filters" role="tablist" aria-label="Filter illustrations"></div>
             <div class="masonry" id="ill-grid"></div>
         </div>
     </section>
@@ -731,9 +742,17 @@
        The character/sheet groupings are inferred from your filenames —
        double-check each project's images and edit the "brief"/"role"/
        step labels to match the real story of each design.
+
+       GALLERY FILTERS: each illustration has a "cat" (category). The
+       filter tabs are built automatically from the categories you use —
+       to add a new tab, just give an image a new "cat" string.
     ========================================================= */
 
     const STEP_LABELS = ['Design Sheet', 'Turnaround', 'Expressions & Detail', 'Final Design'];
+
+    /* Swap an ArtStation URL to the biggest available version for the
+       lightbox. If that size doesn't exist, we fall back to the original. */
+    function hiRes(url){ return url.replace('/large/', '/4k/').replace('/medium/', '/4k/'); }
 
     const conceptProjects = [
         {
@@ -741,6 +760,7 @@
             title: 'Cinderella — Ashes & Redemption',
             kicker: 'Character Design',
             role: 'Personal project · Lead character',
+            cat: 'Characters',
             brief: 'A fallen princess reforged as a warrior. The design had to read as royalty and survivor at once — regal silhouette, battle-worn armor, and a colour story built around ash, blood, and gold.',
             cover: 'https://cdna.artstation.com/p/assets/images/images/090/548/748/large/art3xile-ficha-cen-001.jpg?1769727570',
             images: [
@@ -754,6 +774,7 @@
             title: 'Prince — Winged Paladin',
             kicker: 'Character Design',
             role: 'Personal project · Hero',
+            cat: 'Characters',
             brief: 'A divine knight built on verticality and light. Explored armor language, weapon kit, and a silhouette that stays heroic from every angle of the turnaround.',
             cover: 'https://cdna.artstation.com/p/assets/images/images/095/872/974/large/art3xile-ficha-pri-001.jpg?1769730756',
             images: [
@@ -767,6 +788,7 @@
             title: 'Rider — Street & Machine',
             kicker: 'Character Design',
             role: 'Personal project · Protagonist',
+            cat: 'Characters',
             brief: 'A modern young hero and his transforming mech-bike. Focus on contemporary streetwear, age progression, and a believable relationship between character and vehicle.',
             cover: 'https://cdna.artstation.com/p/assets/images/images/095/873/036/large/art3xile-ficha-rid-001.jpg?1769730713',
             images: [
@@ -780,6 +802,7 @@
             title: 'HK — The Lost Symphony',
             kicker: 'Creature & Character Design',
             role: 'Personal project · Guardian set',
+            cat: 'Creatures',
             brief: 'A set of insectoid guardians with distinct elemental identities and personalities. Each carries its own shape language, palette, and short character bio — designed to read as a family yet never be confused for one another.',
             cover: 'https://cdna.artstation.com/p/assets/images/images/095/871/192/large/art3xile-ilustracion2-6.jpg?1769725402',
             images: [
@@ -793,6 +816,7 @@
             title: 'Weregonk — Creature Design',
             kicker: 'Creature Design',
             role: 'Personal project · Antagonist',
+            cat: 'Creatures',
             brief: 'A nightmare built for menace and readability. The pass moved from base structure to a sheet of reactions and finally a fully realized creature — keeping the silhouette terrifying at thumbnail scale.',
             cover: 'https://cdna.artstation.com/p/assets/images/images/095/871/978/large/art3xile-weregonk2-1.jpg?1769727268',
             images: [
@@ -803,15 +827,16 @@
         }
     ];
 
-    /* Illustrations (non-cultural finished pieces) — strongest first */
+    /* Illustrations (non-cultural finished pieces) — strongest first.
+       "cat" controls which filter tab the piece appears under. */
     const illustrations = [
-        { src:'https://cdnb.artstation.com/p/assets/images/images/095/886/063/large/art3xile-aidemon.jpg?1769771852', title:'AI Demon', tag:'Cyberpunk · Key art' },
-        { src:'https://cdna.artstation.com/p/assets/images/images/095/886/172/large/art3xile-last-prj0-6.jpg?1769772072', title:'Le Chevalier D Eon', tag:'Fan Art' },
-        { src:'https://cdna.artstation.com/p/assets/images/images/095/872/494/large/art3xile-sumo-dsarrollo9.jpg?1769728966', title:'God of the Hot Springs', tag:'Comic illustration' },
-        { src:'https://cdna.artstation.com/p/assets/images/images/095/886/372/large/art3xile-mission10-2.jpg?1769772623', title:'Mission 10', tag:'Scene illustration' },
-        { src:'https://cdnb.artstation.com/p/assets/images/images/095/885/335/large/art3xile-ilustracion4will1.jpg?1769770481', title:'Will', tag:'Portrait commission' },
-        { src:'https://cdnb.artstation.com/p/assets/images/images/095/871/893/large/art3xile-captura-de-pantalla-2025-10-07-024959.jpg?1769727015', title:'Weregonk', tag:'Character illustration' },
-        { src:'https://cdnb.artstation.com/p/assets/images/images/095/873/539/large/art3xile-lilo-eva2.jpg?1769731052', title:'Ohana', tag:'Commission · Fan art' }
+        { src:'https://cdnb.artstation.com/p/assets/images/images/095/886/063/large/art3xile-aidemon.jpg?1769771852', title:'AI Demon', tag:'Cyberpunk · Key art', cat:'OC' },
+        { src:'https://cdna.artstation.com/p/assets/images/images/095/886/172/large/art3xile-last-prj0-6.jpg?1769772072', title:'Le Chevalier D Eon', tag:'Fan Art', cat:'Fan Art' },
+        { src:'https://cdna.artstation.com/p/assets/images/images/095/872/494/large/art3xile-sumo-dsarrollo9.jpg?1769728966', title:'God of the Hot Springs', tag:'Comic illustration', cat:'OC' },
+        { src:'https://cdna.artstation.com/p/assets/images/images/095/886/372/large/art3xile-mission10-2.jpg?1769772623', title:'Mission 10', tag:'Scene illustration', cat:'OC' },
+        { src:'https://cdnb.artstation.com/p/assets/images/images/095/885/335/large/art3xile-ilustracion4will1.jpg?1769770481', title:'Will', tag:'Portrait commission', cat:'OC' },
+        { src:'https://cdnb.artstation.com/p/assets/images/images/095/871/893/large/art3xile-captura-de-pantalla-2025-10-07-024959.jpg?1769727015', title:'Weregonk', tag:'Character illustration', cat:'OC' },
+        { src:'https://cdnb.artstation.com/p/assets/images/images/095/873/539/large/art3xile-lilo-eva2.jpg?1769731052', title:'Ohana', tag:'Commission · Fan art', cat:'Fan Art' }
     ];
 
     /* The Exile Series — cultural / Venezuelan work */
@@ -886,19 +911,60 @@
         conceptGrid.appendChild(card);
     });
 
+    /* Concept filter tabs — fixed order: All, Characters, Creatures */
+    conceptGrid.querySelectorAll('.card').forEach((card, i) => {
+        card.dataset.cat = conceptProjects[i].cat || '';
+    });
+    const conceptFilters = document.getElementById('concept-filters');
+    ['All', 'Characters', 'Creatures'].forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (cat === 'All' ? ' active' : '');
+        btn.textContent = cat;
+        btn.setAttribute('role', 'tab');
+        btn.onclick = () => {
+            conceptFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+            conceptGrid.querySelectorAll('.card').forEach(el => {
+                const show = (cat === 'All') || (el.dataset.cat === cat);
+                el.classList.toggle('hide', !show);
+            });
+        };
+        conceptFilters.appendChild(btn);
+    });
+
     /* =========================================================
-       RENDER: ILLUSTRATIONS
+       RENDER: ILLUSTRATIONS + FILTER TABS
     ========================================================= */
     const illGrid = document.getElementById('ill-grid');
     illustrations.forEach(im => {
         const idx = registerLB({ src: im.src, title: im.title, tag: im.tag });
         const el = document.createElement('div');
         el.className = 'ill';
+        el.dataset.cat = im.cat || '';
         el.innerHTML = `<img src="${im.src}" alt="${im.title}" loading="lazy">
             <div class="cap"><span>${im.tag}</span><b>${im.title}</b></div>`;
         el.onclick = () => openLB(idx);
         illGrid.appendChild(el);
     });
+
+    /* Build filter tabs automatically from the categories in use */
+    const illFilters = document.getElementById('ill-filters');
+    const categories = ['All', ...[...new Set(illustrations.map(i => i.cat).filter(Boolean))]];
+    categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (cat === 'All' ? ' active' : '');
+        btn.textContent = cat;
+        btn.setAttribute('role', 'tab');
+        btn.onclick = () => {
+            illFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+            illGrid.querySelectorAll('.ill').forEach(el => {
+                const show = (cat === 'All') || (el.dataset.cat === cat);
+                el.classList.toggle('hide', !show);
+            });
+        };
+        illFilters.appendChild(btn);
+    });
+    /* Only show the tabs if there's more than one real category */
+    if (categories.length <= 2) illFilters.style.display = 'none';
 
     /* =========================================================
        RENDER: EXILE SERIES
@@ -921,7 +987,7 @@
     });
 
     /* =========================================================
-       LIGHTBOX LOGIC
+       LIGHTBOX LOGIC  (loads the sharpest version, with fallback)
     ========================================================= */
     let lbIndex = 0;
     const lb = document.getElementById('lightbox');
@@ -931,8 +997,11 @@
     }
     function renderLB(){
         const it = lightboxPool[lbIndex];
-        document.getElementById('lb-img').src = it.src;
-        document.getElementById('lb-img').alt = it.title;
+        const img = document.getElementById('lb-img');
+        img.alt = it.title || '';
+        /* try the high-res version; if it 404s, fall back to the original */
+        img.onerror = () => { img.onerror = null; img.src = it.src; };
+        img.src = hiRes(it.src);
         document.getElementById('lb-cap').innerHTML = `<span>${it.tag||''}</span>${it.title||''}`;
     }
     function stepLB(d){
