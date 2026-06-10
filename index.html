@@ -754,6 +754,19 @@
        lightbox. If that size doesn't exist, we fall back to the original. */
     function hiRes(url){ return url.replace('/large/', '/4k/').replace('/medium/', '/4k/'); }
 
+    /* Responsive thumbnails: offer a smaller "medium" derivative alongside the
+       full "large" one and let the browser pick the right size for the screen.
+       Standard screens load the lighter medium (faster, less harsh downscaling);
+       high-DPI screens still pull the large for sharpness. Falls back to src. */
+    function thumbAttrs(src, sizes){
+        if (src.includes('/large/')) {
+            const med = src.replace('/large/', '/medium/');
+            return `src="${src}" srcset="${med} 600w, ${src} 1920w" sizes="${sizes}"`;
+        }
+        return `src="${src}"`;
+    }
+    const GRID_SIZES = '(min-width:1024px) 30vw, (min-width:640px) 47vw, 92vw';
+
     const conceptProjects = [
         {
             id: 'cinderella',
@@ -870,7 +883,7 @@
         if (f.type === 'project') {
             const p = conceptProjects.find(x => x.id === f.id);
             card.innerHTML = `
-                <div class="thumb"><img src="${p.cover}" alt="${p.title}" loading="lazy"></div>
+                <div class="thumb"><img ${thumbAttrs(p.cover, GRID_SIZES)} alt="${p.title}" loading="lazy" decoding="async"></div>
                 <div class="meta">
                     <span class="kicker">${p.kicker}</span>
                     <h3>${p.title}</h3>
@@ -880,7 +893,7 @@
             card.onclick = () => openProject(p.id);
         } else {
             card.innerHTML = `
-                <div class="thumb"><img src="${f.cover}" alt="${f.title}" loading="lazy"${f.pos ? ` style="object-position:${f.pos}"` : ''}></div>
+                <div class="thumb"><img ${thumbAttrs(f.cover, GRID_SIZES)} alt="${f.title}" loading="lazy" decoding="async"${f.pos ? ` style="object-position:${f.pos}"` : ''}></div>
                 <div class="meta">
                     <span class="kicker">${f.kicker}</span>
                     <h3>${f.title}</h3>
@@ -900,7 +913,7 @@
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
-            <div class="thumb"><img src="${p.cover}" alt="${p.title}" loading="lazy"></div>
+            <div class="thumb"><img ${thumbAttrs(p.cover, GRID_SIZES)} alt="${p.title}" loading="lazy" decoding="async"></div>
             <div class="meta">
                 <span class="kicker">${p.kicker}</span>
                 <h3>${p.title}</h3>
@@ -940,7 +953,7 @@
         const el = document.createElement('div');
         el.className = 'ill';
         el.dataset.cat = im.cat || '';
-        el.innerHTML = `<img src="${im.src}" alt="${im.title}" loading="lazy">
+        el.innerHTML = `<img ${thumbAttrs(im.src, GRID_SIZES)} alt="${im.title}" loading="lazy" decoding="async">
             <div class="cap"><span>${im.tag}</span><b>${im.title}</b></div>`;
         el.onclick = () => openLB(idx);
         illGrid.appendChild(el);
@@ -980,7 +993,7 @@
         const idx = registerLB({ src: w.src, title: w.title, tag: w.tag });
         const el = document.createElement('div');
         el.className = 'exile-tile';
-        el.innerHTML = `<img src="${w.src}" alt="${w.title}" loading="lazy">
+        el.innerHTML = `<img ${thumbAttrs(w.src, GRID_SIZES)} alt="${w.title}" loading="lazy" decoding="async">
             <div class="cap"><b>${w.title}</b></div>`;
         el.onclick = () => openLB(idx);
         exileGrid.appendChild(el);
