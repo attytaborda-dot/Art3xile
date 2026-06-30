@@ -2,7 +2,8 @@
 
 Personal art portfolio of **José Antonio Taborda Morán** — character design, illustration, concept art, and animation.
 
-**Live site:** [ja-tm.github.io/Art3xile](https://ja-tm.github.io/Art3xile/)
+**Live site:** [ja-tm.github.io/Art3xile](https://ja-tm.github.io/Art3xile/)  
+**Current version:** `v1.0.0`
 
 ## Project structure
 
@@ -62,6 +63,29 @@ python3 -m http.server 8080
 ## Deploy
 
 Push to `main` on GitHub — GitHub Pages updates automatically.
+
+## Versioning
+
+This project uses [Semantic Versioning](https://semver.org/) via Git tags.
+
+| Tag | Description |
+|-----|-------------|
+| `v1.0.0` | First structured release — JSON data layer, split assets, pulse UX system |
+
+### Release workflow
+
+```bash
+# After merging changes to main:
+git tag -a v1.1.0 -m "Short description of what changed"
+git push origin main
+git push origin v1.1.0
+```
+
+**When to bump:**
+- `v1.x.0` — new features (new section, CMS field, major UI)
+- `v1.0.x` — content updates, bug fixes, small CSS tweaks
+
+List tags: `git tag -l`
 
 ## Stack
 
