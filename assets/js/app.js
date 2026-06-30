@@ -230,7 +230,7 @@ function openProject(id) {
         <div class="pv-stage">${steps}</div>
         <div class="pv-foot">
             <p>Want to see this character in motion, or commission your own?</p>
-            <button class="btn btn-solid" onclick="closeProject(); setTimeout(()=>document.querySelector('#contact').scrollIntoView({behavior:'smooth'}),200);">Get in touch</button>
+            <button class="btn btn-cta" onclick="closeProject(); setTimeout(()=>document.querySelector('#contact').scrollIntoView({behavior:'smooth'}),200);">Get in touch</button>
         </div>`;
     pv.classList.add('open');
     pv.scrollTop = 0;
