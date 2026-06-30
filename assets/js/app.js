@@ -185,7 +185,6 @@ function openLB(i) {
     renderLB();
     lb.classList.add('open');
     document.body.style.overflow = 'hidden';
-    requestAnimationFrame(() => { lb.style.opacity = '1'; });
 }
 
 function renderLB() {
